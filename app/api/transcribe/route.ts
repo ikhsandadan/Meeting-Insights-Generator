@@ -15,9 +15,6 @@ export async function POST(request: Request) {
             );
         }
 
-        console.log('File URL:', fileUrl);
-
-        // Fetch from Hugging Face API
         const response = await fetch(
             "https://api-inference.huggingface.co/models/openai/whisper-large-v3",
             {
@@ -36,13 +33,10 @@ export async function POST(request: Request) {
 
         const result = await response.json();
 
-        console.log('Hugging Face API response:', result);
-
-        return NextResponse.json(result);
+        return NextResponse.json({ taskId: result.task_id }); // Return the task ID for polling
     } catch (error: unknown) {
         console.error('Error during the transcription process:', error);
 
-        // Type assertion to narrow down the unknown type
         let errorMessage = 'Unknown error';
         if (error instanceof Error) {
             errorMessage = error.message;
