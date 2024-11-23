@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 
 const token = process.env.NEXT_PUBLIC_HUGGING_FACE_TOKEN;
 
-async function fetchWithRetry(url: string, options: RequestInit, retries = 3): Promise<any> {
+async function fetchWithRetry(url: string, options: RequestInit, retries = 3): Promise<unknown> {
     try {
         const response = await fetch(url, options);
         if (!response.ok) throw new Error(response.statusText);
@@ -29,18 +29,14 @@ export async function POST(request: Request): Promise<NextResponse> {
 
         console.log("Request URL: ", fileUrl);
 
-        const response = await fetchWithRetry("https://api-inference.huggingface.co/models/openai/whisper-large-v3", {
+        const result = await fetchWithRetry("https://api-inference.huggingface.co/models/openai/whisper-large-v3", {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/octet-stream",
             },
             method: "POST",
             body: JSON.stringify({ url: fileUrl }),
-        });
-
-        console.log("Response status: ", response.status);
-
-        const result = response;
+        }) as Record<string, unknown>;
 
         console.log("Response data: ", result);
 
