@@ -1,8 +1,0 @@
-{
-  "functions": {
-    "app/api/transcribe/route.ts": {
-      "maxDuration": 300
-    }
-  },
-  "regions": ["sin1"]
-}
