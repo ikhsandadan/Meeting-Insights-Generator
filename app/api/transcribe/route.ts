@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 
 const token = process.env.NEXT_PUBLIC_HUGGING_FACE_TOKEN;
 
-async function fetchWithRetry(url, options, retries = 3) {
+async function fetchWithRetry(url: string, options: RequestInit, retries = 3): Promise<any> {
     try {
         const response = await fetch(url, options);
         if (!response.ok) throw new Error(response.statusText);
@@ -17,11 +17,17 @@ async function fetchWithRetry(url, options, retries = 3) {
     }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: Request): Promise<NextResponse> {
     try {
         // Get filename from request URL
         const { searchParams } = new URL(request.url);
-        const fileUrl = searchParams.get('fileUrl'); // Cloudinary's url for the file
+        const fileUrl: string | null = searchParams.get('fileUrl'); // Cloudinary's url for the file
+
+        if (!fileUrl) {
+            throw new Error("fileUrl parameter is missing");
+        }
+
+        console.log("Request URL: ", fileUrl);
 
         const response = await fetchWithRetry("https://api-inference.huggingface.co/models/openai/whisper-large-v3", {
             headers: {
@@ -32,10 +38,11 @@ export async function POST(request: Request) {
             body: JSON.stringify({ url: fileUrl }),
         });
 
+        console.log("Response status: ", response.status);
 
-        const result = await response.json();
+        const result = response;
 
-        console.log(result);
+        console.log("Response data: ", result);
 
         return NextResponse.json(result);
     } catch (error: unknown) {
