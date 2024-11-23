@@ -24,8 +24,6 @@ const MeetingInsights = () => {
     'video/mp4', 'video/webm', 'video/quicktime'
   ];
 
-  import axios, { AxiosProgressEvent } from 'axios';
-
   const processAudioData = async (audioBlob: Blob): Promise<void> => {
       try {
           setLoading(true);
