@@ -17,6 +17,7 @@ export async function POST(request: Request) {
                 },
                 method: "POST",
                 body: JSON.stringify({ url: fileUrl }),
+                timeout: 10000 // Timeout set to 10 seconds
             }
         );
 
