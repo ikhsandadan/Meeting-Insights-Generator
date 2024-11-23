@@ -4,11 +4,18 @@ const token = process.env.NEXT_PUBLIC_HUGGING_FACE_TOKEN;
 const MAX_RETRIES = 3;
 const INITIAL_DELAY = 1000;
 
-async function wait(ms: number) {
+interface WhisperResponse {
+  text?: string;
+  task_url?: string;
+  error?: string;
+  status?: 'completed' | 'processing' | 'error';
+}
+
+async function wait(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function checkStatus(taskUrl: string): Promise<any> {
+async function checkStatus(taskUrl: string): Promise<WhisperResponse> {
   const response = await fetch(taskUrl, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -42,10 +49,10 @@ export async function POST(request: Request) {
       }
     );
 
-    const initialResult = await response.json();
+    const initialResult: WhisperResponse = await response.json();
 
     // Check if we got an immediate result
-    if (!initialResult.error) {
+    if (initialResult.text) {
       return NextResponse.json(initialResult);
     }
 
@@ -56,7 +63,7 @@ export async function POST(request: Request) {
         await wait(INITIAL_DELAY * Math.pow(2, attempts)); // Exponential backoff
         const result = await checkStatus(initialResult.task_url);
         
-        if (result.status === 'completed') {
+        if (result.status === 'completed' && result.text) {
           return NextResponse.json(result);
         }
         
