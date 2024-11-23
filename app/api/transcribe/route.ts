@@ -6,40 +6,29 @@ export async function POST(request: Request) {
     try {
         // Get filename from request URL
         const { searchParams } = new URL(request.url);
-        const fileUrl = searchParams.get('url'); // Cloudinary's URL for the file
-
-        if (!fileUrl) {
-            return NextResponse.json(
-                { error: 'URL not provided' },
-                { status: 400 }
-            );
-        }
-
-        console.log('Sending request to Hugging Face with URL:', fileUrl);
+        const fileUrl = searchParams.get('fileUrl'); // Cloudinary's url for the file
 
         const response = await fetch(
             "https://api-inference.huggingface.co/models/openai/whisper-large-v3",
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json", // Change content type to JSON
+                    "Content-Type": "application/octet-stream",
                 },
                 method: "POST",
                 body: JSON.stringify({ url: fileUrl }),
-                // Increase timeout for the fetch request
-                timeout: 10000 // Timeout set to 10 seconds
             }
         );
 
         const result = await response.json();
 
-        console.log('Received response from Hugging Face:', result);
+        console.log(result);
 
         return NextResponse.json(result);
     } catch (error: unknown) {
-        console.error('Error during the transcription process:', error);
+        console.error(error);
 
-        // Handle error and return appropriate response
+        // Type assertion to narrow down the unknown type
         let errorMessage = 'Unknown error';
         if (error instanceof Error) {
             errorMessage = error.message;
