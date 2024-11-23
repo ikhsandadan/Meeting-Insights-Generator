@@ -44,7 +44,7 @@ const MeetingInsights = () => {
 
       // Check if the upload was successful and begin transcription
       if (data.status === 200) {
-        const res = await axios.post(`/api/transcribe?url=${data.data.secure_url}`);
+        const res = await axios.post(`/api/transcribe?fileUrl=${data.data.secure_url}`);
 
         if (res.status === 200) {
           await generateSummary(res.data.text);
