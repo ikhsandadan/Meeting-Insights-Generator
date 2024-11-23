@@ -97,7 +97,7 @@ Navigate to `http://localhost:3000`
 
 Check out the live demo at: [Meeting Insights Generator Demo](https://meeting-insights-generator-alpha.vercel.app/)
 
-if you want to try you can use this file to test the app:  [Meeting Audio File Demo](https://meeting-insights-generator-alpha.vercel.app/](https://github.com/ikhsandadan/Meeting-Insights-Generator/blob/main/Special%20Meeting%20-%2001_10_2022_2.mp3)
+if you want to try you can use this file to test the app:  [Meeting Audio File Demo](https://github.com/ikhsandadan/Meeting-Insights-Generator/blob/main/Special%20Meeting%20-%2001_10_2022_2.mp3)
 
 
 ---
