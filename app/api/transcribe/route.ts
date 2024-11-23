@@ -6,7 +6,7 @@ export async function POST(request: Request) {
     try {
         // Get filename from request URL
         const { searchParams } = new URL(request.url);
-        const fileUrl = searchParams.get('url'); // Cloudinary's URL for the file
+        const fileUrl = searchParams.get('fileUrl'); // Cloudinary's URL for the file
 
         if (!fileUrl) {
             return NextResponse.json(
