@@ -15,7 +15,7 @@ export async function POST(request: Request) {
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/octet-stream",
+                    "Content-Type": "application/json",
                 },
                 method: "POST",
                 body: JSON.stringify({ url: fileUrl }),
