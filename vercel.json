@@ -1,0 +1,8 @@
+{
+  "functions": {
+    "app/api/transcribe/route.ts": {
+      "maxDuration": 300
+    }
+  },
+  "regions": ["sin1"]  // Gunakan region terdekat dengan lokasi Anda
+}
