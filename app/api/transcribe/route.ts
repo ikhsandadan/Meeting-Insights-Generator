@@ -8,6 +8,8 @@ export async function POST(request: Request) {
         const { searchParams } = new URL(request.url);
         const fileUrl = searchParams.get('fileUrl'); // Cloudinary's url for the file
 
+        console.log(fileUrl);
+
         const response = await fetch(
             "https://api-inference.huggingface.co/models/openai/whisper-large-v3",
             {
