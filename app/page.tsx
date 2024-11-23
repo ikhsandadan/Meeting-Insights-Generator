@@ -24,48 +24,79 @@ const MeetingInsights = () => {
     'video/mp4', 'video/webm', 'video/quicktime'
   ];
 
+  import axios, { AxiosProgressEvent } from 'axios';
+
   const processAudioData = async (audioBlob: Blob): Promise<void> => {
-    try {
-      setLoading(true);
-      const formData = new FormData();
-      formData.append('audio', audioBlob);
-
-      // Upload audio
-      const data = await axios.post('/api/upload', formData, {
-        onUploadProgress: (progressEvent: AxiosProgressEvent) => {
-          if (progressEvent.lengthComputable) {
-            const progress = progressEvent.total !== undefined 
-              ? (progressEvent.loaded / progressEvent.total) * 100 
-              : 0;
-            setUploadProgress(Math.round(progress));
+      try {
+          setLoading(true);
+          const formData = new FormData();
+          formData.append('audio', audioBlob);
+  
+          // Upload audio
+          const data = await axios.post('/api/upload', formData, {
+              onUploadProgress: (progressEvent: AxiosProgressEvent) => {
+                  if (progressEvent.lengthComputable) {
+                      const progress = progressEvent.total !== undefined 
+                          ? (progressEvent.loaded / progressEvent.total) * 100 
+                          : 0;
+                      setUploadProgress(Math.round(progress));
+                  }
+              },
+          });
+  
+          // Check if the upload was successful and begin transcription
+          if (data.status === 200) {
+              const res = await axios.post(`/api/transcribe?fileUrl=${data.data.secure_url}`);
+  
+              if (res.status === 200) {
+                  const { taskId } = res.data;
+  
+                  // Polling function to check the status
+                  const pollTranscriptionStatus = async (taskId: string): Promise<void> => {
+                      try {
+                          const statusRes = await axios.get(`/api/transcription-status?taskId=${taskId}`);
+                          if (statusRes.status === 200) {
+                              const { status, text } = statusRes.data;
+                              if (status === 'completed') {
+                                  await generateSummary(text);
+  
+                                  // Delete uploaded file
+                                  await fetch(`/api/delete?publicId=${data.data.public_id}`, { method: 'DELETE' });
+  
+                                  setTranscription(text);
+                                  setLoading(false);
+                              } else if (status === 'processing') {
+                                  // Wait for some time and then poll again
+                                  setTimeout(() => pollTranscriptionStatus(taskId), 5000);
+                              } else {
+                                  setError('Transcription failed or is in an unknown state');
+                                  setLoading(false);
+                              }
+                          } else {
+                              setError('Failed to get transcription status');
+                              setLoading(false);
+                          }
+                      } catch (err) {
+                          setError(`Error while polling transcription status: ${err instanceof Error ? err.message : 'Unknown error'}`);
+                          setLoading(false);
+                      }
+                  };
+  
+                  // Start polling
+                  pollTranscriptionStatus(taskId);
+  
+              } else {
+                  setError('Error starting transcription');
+                  setLoading(false);
+              }
+          } else {
+              setError('Failed to upload audio');
+              setLoading(false);
           }
-        },
-      });
-
-      // Check if the upload was successful and begin transcription
-      if (data.status === 200) {
-        const res = await axios.post(`/api/transcribe?fileUrl=${data.data.secure_url}`);
-
-        if (res.status === 200) {
-          await generateSummary(res.data.text);
-
-          // Delete uploaded file
-          await fetch(`/api/delete?publicId=${data.data.public_id}`, { method: 'DELETE' });
-
-          setTranscription(res.data.text);
+      } catch (err) {
+          setError(`Error while processing audio: ${err instanceof Error ? err.message : 'Unknown error'}`);
           setLoading(false);
-        } else {
-          setError('Error transcribe audio');
-          setLoading(false);
-        }
-      } else {
-        setError('Failed to upload audio');
-        setLoading(false);
       }
-    } catch (err) {
-      setError(`Error while processing audio: ${err instanceof Error ? err.message : 'Unknown error'}`);
-      setLoading(false);
-    }
   };
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
