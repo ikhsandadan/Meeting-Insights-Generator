@@ -4,7 +4,7 @@ import { useState, useRef } from 'react';
 import axios, { AxiosProgressEvent } from 'axios';
 import { Card, CardContent, CardHeader, CardTitle } from './components/ui/card';
 import { Button } from './components/ui/button';
-import { FileText, Image, Download, Upload, Loader2 } from 'lucide-react';
+import { FileText, Image, Download, Upload, Loader2, Clock } from 'lucide-react';
 import { Alert, AlertDescription } from './components/ui/alert';
 import Visualizations from './components/Visualizations';
 import { Visualization, Keyword } from './types';
@@ -17,6 +17,7 @@ const MeetingInsights = () => {
   const [error, setError] = useState<string>('');
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [responseTime, setResponseTime] = useState<number>(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const supportedFormats: string[] = [
@@ -25,6 +26,7 @@ const MeetingInsights = () => {
   ];
 
   const processAudioData = async (audioBlob: Blob): Promise<void> => {
+    const startTime = performance.now();
     try {
       setLoading(true);
       const formData = new FormData();
@@ -65,6 +67,10 @@ const MeetingInsights = () => {
     } catch (err) {
       setError(`Error while processing audio: ${err instanceof Error ? err.message : 'Unknown error'}`);
       setLoading(false);
+    } finally {
+      const endTime = performance.now();
+      const totalTime = endTime - startTime;
+      setResponseTime(totalTime);
     }
   };
 
@@ -79,6 +85,7 @@ const MeetingInsights = () => {
 
     setSelectedFile(file);
     setUploadProgress(0);
+    setResponseTime(0);
     await processAudioData(file);
   };
 
@@ -142,6 +149,7 @@ const MeetingInsights = () => {
       transcription,
       summary,
       visualizations,
+      responseTime,
       timestamp: new Date().toISOString(),
     };
 
@@ -154,6 +162,11 @@ const MeetingInsights = () => {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+  };
+
+  const formatResponseTime = (ms: number): string => {
+    if (ms < 1000) return `${Math.round(ms)}ms`;
+    return `${(ms / 1000).toFixed(2)}s`;
   };
 
   return (
@@ -196,6 +209,14 @@ const MeetingInsights = () => {
             <Alert className="mt-4">
               <Loader2 className="h-4 w-4 animate-spin mr-2" />
               <AlertDescription> Processing... Please wait. </AlertDescription>
+            </Alert>
+          )}
+          {responseTime > 0 && (
+            <Alert className="mt-4">
+              <Clock className="h-4 w-4 mr-2" />
+              <AlertDescription>
+                Total processing time: <span className="font-bold">{formatResponseTime(responseTime)}</span>
+              </AlertDescription>
             </Alert>
           )}
           {transcription && (
