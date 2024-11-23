@@ -92,6 +92,12 @@ Navigate to `http://localhost:3000`
 ![4](https://github.com/user-attachments/assets/17263896-94a2-45ac-bf4c-f7eed4648e48)
 
 
+## 🎞️ Video Demo
+
+
+[![App-demo](https://img.youtube.com/vi/YorR132RezM/0.jpg)](https://www.youtube.com/watch?v=YorR132RezM)
+
+
 
 ## 🚀 Live Demo
 
