@@ -5,7 +5,10 @@
 
 Transform your meetings into actionable insights! Meeting Insights Generator is a powerful web application that transcribes audio/video meetings and generates AI-powered summaries from your conversations.
 
-![Meeting Insights Demo](https://via.placeholder.com/800x400.png?text=Meeting+Insights+Demo)
+
+![1](https://github.com/user-attachments/assets/f8396cfc-8329-449f-931a-aa6215ea343d)
+
+
 
 ## ✨ Features
 
@@ -77,13 +80,18 @@ Navigate to `http://localhost:3000`
 ## 🖼️ Screenshots
 
 
-![Upload Interface](https://via.placeholder.com/400x300.png?text=Upload+Interface)
+
+![2](https://github.com/user-attachments/assets/d3ce3a8b-fbf8-4953-804b-6331d02c3521)
 
 
-![Processing View](https://via.placeholder.com/400x300.png?text=Processing+View)
+
+![3](https://github.com/user-attachments/assets/3c850f1b-da64-452c-9a77-fc5d434758e7)
 
 
-![Results Dashboard](https://via.placeholder.com/400x300.png?text=Results+Dashboard)
+
+![4](https://github.com/user-attachments/assets/17263896-94a2-45ac-bf4c-f7eed4648e48)
+
+
 
 ## 🚀 Live Demo
 
