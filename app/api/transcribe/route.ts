@@ -6,17 +6,27 @@ export async function POST(request: Request) {
     try {
         // Get filename from request URL
         const { searchParams } = new URL(request.url);
-        const fileUrl = searchParams.get('fileUrl'); // Cloudinary's url for the file
+        const fileUrl = searchParams.get('url'); // Cloudinary's URL for the file
+
+        if (!fileUrl) {
+            return NextResponse.json(
+                { error: 'URL not provided' },
+                { status: 400 }
+            );
+        }
 
         const response = await fetch(
             "https://api-inference.huggingface.co/models/openai/whisper-large-v3",
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/octet-stream",
+                    "Content-Type": "application/json",
                 },
                 method: "POST",
-                body: JSON.stringify({ url: fileUrl }),
+                body: JSON.stringify({
+                    url: fileUrl,
+                    webhook: "https://your-vercel-app-url/api/webhook", // Ganti dengan URL webhook Anda
+                }),
             }
         );
 
@@ -24,11 +34,11 @@ export async function POST(request: Request) {
 
         console.log(result);
 
-        return NextResponse.json(result);
+        return NextResponse.json({ message: "Transcription request received", result });
     } catch (error: unknown) {
-        console.error(error);
+        console.error('Error during the transcription process:', error);
 
-        // Type assertion to narrow down the unknown type
+        // Handle error and return appropriate response
         let errorMessage = 'Unknown error';
         if (error instanceof Error) {
             errorMessage = error.message;
