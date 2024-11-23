@@ -6,7 +6,7 @@ export async function POST(request: Request) {
     try {
         // Get filename from request URL
         const { searchParams } = new URL(request.url);
-        const fileUrl = searchParams.get('url'); // Cloudinary's public ID for the file
+        const fileUrl = searchParams.get('fileUrl'); // Cloudinary's public URL for the file
 
         const response = await fetch(
             "https://api-inference.huggingface.co/models/openai/whisper-large-v3",
